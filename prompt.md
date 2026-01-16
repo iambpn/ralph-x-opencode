@@ -18,9 +18,9 @@ You are an autonomous coding agent working on a software project.
 ## Progress Report Format
 
 APPEND to progress.txt (never replace, always append):
+
 ```
 ## [Date/Time] - [Story ID]
-Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
 - What was implemented
 - Files changed
 - **Learnings for future iterations:**
@@ -29,8 +29,6 @@ Thread: https://ampcode.com/threads/$AMP_CURRENT_THREAD_ID
   - Useful context (e.g., "the evaluation panel is in component X")
 ---
 ```
-
-Include the thread URL so future iterations can use the `read_thread` tool to reference previous work if needed.
 
 The learnings section is critical - it helps future iterations avoid repeating mistakes and understand the codebase better.
 
@@ -61,12 +59,14 @@ Before committing, check if any edited files have learnings worth preserving in 
    - Configuration or environment requirements
 
 **Examples of good AGENTS.md additions:**
+
 - "When modifying X, also update Y to keep them in sync"
 - "This module uses pattern Z for all API calls"
 - "Tests require the dev server running on PORT 3000"
 - "Field names must match the template exactly"
 
 **Do NOT add:**
+
 - Story-specific implementation details
 - Temporary debugging notes
 - Information already in progress.txt
@@ -95,8 +95,7 @@ A frontend story is NOT complete until browser verification passes.
 
 After completing a user story, check if ALL stories have `passes: true`.
 
-If ALL stories are complete and passing, reply with:
-<promise>COMPLETE</promise>
+If ALL stories are complete and passing, reply with: <promise>COMPLETE</promise>
 
 If there are still stories with `passes: false`, end your response normally (another iteration will pick up the next story).
 

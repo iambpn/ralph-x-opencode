@@ -1,8 +1,10 @@
 # Ralph
 
+## This repo is the fork of [snarktank/ralph](https://github.com/snarktank/ralph) which uses [Amp](https://ampcode.com) but this repo replaces Amp with [Opencode](https://opencode.ai).
+
 ![Ralph](ralph.webp)
 
-Ralph is an autonomous AI agent loop that runs [Amp](https://ampcode.com) repeatedly until all PRD items are complete. Each iteration is a fresh Amp instance with clean context. Memory persists via git history, `progress.txt`, and `prd.json`.
+Ralph is an autonomous AI agent loop that runs [Opencode](https://opencode.ai) repeatedly until all PRD items are complete. Each iteration is a fresh Opencode instance with clean context. Memory persists via git history, `progress.txt`, and `prd.json`.
 
 Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 
@@ -10,44 +12,32 @@ Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/).
 
 ## Prerequisites
 
-- [Amp CLI](https://ampcode.com) installed and authenticated
+- [Opencode CLI](https://opencode.ai) installed and authenticated
 - `jq` installed (`brew install jq` on macOS)
 - A git repository for your project
 
 ## Setup
 
-### Option 1: Copy to your project
+### Step 1: Copy to your project
 
 Copy the ralph files into your project:
 
 ```bash
 # From your project root
 mkdir -p scripts/ralph
-cp /path/to/ralph/ralph.sh scripts/ralph/
-cp /path/to/ralph/prompt.md scripts/ralph/
+cp path_to_this_repo/ralph.sh scripts/ralph/
+cp path_to_this_repo/prompt.md scripts/ralph/
 chmod +x scripts/ralph/ralph.sh
 ```
 
-### Option 2: Install skills globally
+### Step 2: Install skills globally (or locally within project)
 
-Copy the skills to your Amp config for use across all projects:
+Copy the skills to your global pencode config for use across all projects:
 
 ```bash
-cp -r skills/prd ~/.config/amp/skills/
-cp -r skills/ralph ~/.config/amp/skills/
+cp -r skills/prd ~/.config/opencode/skills/
+cp -r skills/ralph ~/.config/opencode/skills/
 ```
-
-### Configure Amp auto-handoff (recommended)
-
-Add to `~/.config/amp/settings.json`:
-
-```json
-{
-  "amp.experimental.autoHandoff": { "context": 90 }
-}
-```
-
-This enables automatic handoff when context fills up, allowing Ralph to handle large stories that exceed a single context window.
 
 ## Workflow
 
@@ -69,17 +59,21 @@ Use the Ralph skill to convert the markdown PRD to JSON:
 Load the ralph skill and convert tasks/prd-[feature-name].md to prd.json
 ```
 
-This creates `prd.json` with user stories structured for autonomous execution.
+This creates `prd.json` with user stories structured for autonomous execution. Copy and place this file in the same directory as `prompt.md`.
 
 ### 3. Run Ralph
 
 ```bash
-./scripts/ralph/ralph.sh [max_iterations]
+./scripts/ralph/ralph.sh [max_iterations] [other opencode run args]
 ```
 
-Default is 10 iterations.
+Default:
+
+- max_iterations is 10 iterations.
+- other opencode run args are optional. If not provided, it will use the defaults from your opencode config.
 
 Ralph will:
+
 1. Create a feature branch (from PRD `branchName`)
 2. Pick the highest priority story where `passes: false`
 3. Implement that single story
@@ -91,16 +85,16 @@ Ralph will:
 
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `ralph.sh` | The bash loop that spawns fresh Amp instances |
-| `prompt.md` | Instructions given to each Amp instance |
-| `prd.json` | User stories with `passes` status (the task list) |
-| `prd.json.example` | Example PRD format for reference |
-| `progress.txt` | Append-only learnings for future iterations |
-| `skills/prd/` | Skill for generating PRDs |
-| `skills/ralph/` | Skill for converting PRDs to JSON |
-| `flowchart/` | Interactive visualization of how Ralph works |
+| File               | Purpose                                            |
+| ------------------ | -------------------------------------------------- |
+| `ralph.sh`         | The bash loop that spawns fresh Opencode instances |
+| `prompt.md`        | Instructions given to each Opencode instance       |
+| `prd.json`         | User stories with `passes` status (the task list)  |
+| `prd.json.example` | Example PRD format for reference                   |
+| `progress.txt`     | Append-only learnings for future iterations        |
+| `skills/prd/`      | Skill for generating PRDs                          |
+| `skills/ralph/`    | Skill for converting PRDs to JSON                  |
+| `flowchart/`       | Interactive visualization of how Ralph works       |
 
 ## Flowchart
 
@@ -120,7 +114,8 @@ npm run dev
 
 ### Each Iteration = Fresh Context
 
-Each iteration spawns a **new Amp instance** with clean context. The only memory between iterations is:
+Each iteration spawns a **new Opencode instance** with clean context. The only memory between iterations is:
+
 - Git history (commits from previous iterations)
 - `progress.txt` (learnings and context)
 - `prd.json` (which stories are done)
@@ -130,21 +125,24 @@ Each iteration spawns a **new Amp instance** with clean context. The only memory
 Each PRD item should be small enough to complete in one context window. If a task is too big, the LLM runs out of context before finishing and produces poor code.
 
 Right-sized stories:
+
 - Add a database column and migration
 - Add a UI component to an existing page
 - Update a server action with new logic
 - Add a filter dropdown to a list
 
 Too big (split these):
+
 - "Build the entire dashboard"
 - "Add authentication"
 - "Refactor the API"
 
 ### AGENTS.md Updates Are Critical
 
-After each iteration, Ralph updates the relevant `AGENTS.md` files with learnings. This is key because Amp automatically reads these files, so future iterations (and future human developers) benefit from discovered patterns, gotchas, and conventions.
+After each iteration, Ralph updates the relevant `AGENTS.md` files with learnings. This is key because Opencode automatically reads these files, so future iterations (and future human developers) benefit from discovered patterns, gotchas, and conventions.
 
 Examples of what to add to AGENTS.md:
+
 - Patterns discovered ("this codebase uses X for Y")
 - Gotchas ("do not forget to update Z when changing W")
 - Useful context ("the settings panel is in component X")
@@ -152,6 +150,7 @@ Examples of what to add to AGENTS.md:
 ### Feedback Loops
 
 Ralph only works if there are feedback loops:
+
 - Typecheck catches type errors
 - Tests verify behavior
 - CI must stay green (broken code compounds across iterations)
@@ -182,6 +181,7 @@ git log --oneline -10
 ## Customizing prompt.md
 
 Edit `prompt.md` to customize Ralph's behavior for your project:
+
 - Add project-specific quality check commands
 - Include codebase conventions
 - Add common gotchas for your stack
@@ -193,4 +193,4 @@ Ralph automatically archives previous runs when you start a new feature (differe
 ## References
 
 - [Geoffrey Huntley's Ralph article](https://ghuntley.com/ralph/)
-- [Amp documentation](https://ampcode.com/manual)
+- [Opencode documentation](https://opencode.ai/docs)
