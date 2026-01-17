@@ -65,7 +65,7 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   echo "═══════════════════════════════════════════════════════"
 
   # Run opencode with the ralph prompt
-  OUTPUT=$(cat "$SCRIPT_DIR/prompt.md" | opencode run -m $OPENCODE_RUN_ARGS 2>&1 | tee /dev/stderr) || true
+  OUTPUT=$(cat "$SCRIPT_DIR/prompt.md" | opencode run $OPENCODE_RUN_ARGS 2>&1 | tee /dev/stderr) || true
 
   # Check for completion signal
   if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
