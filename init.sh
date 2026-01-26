@@ -3,10 +3,13 @@ set -euo pipefail
 
 usage() {
   cat <<EOF
-Usage: $0 /path/to/project
+Usage: $0 /path/to/project [--with-opencode]
 
 Copies Ralph files (ralph.sh and prompt.md) into the target project's scripts/ralph/ directory
 and makes ralph.sh executable. Also copies the skills directory to the target project.
+
+Options:
+  --with-opencode    Also copy opencode/opencode.json to the project root
 EOF
   exit 1
 }
@@ -18,6 +21,14 @@ fi
 
 # Set the destination directory from the first argument
 DEST="$1"
+
+# Check for optional parameters
+COPY_OPENCODE=false
+for arg in "${@:2}"; do
+  if [ "$arg" = "--with-opencode" ]; then
+    COPY_OPENCODE=true
+  fi
+done
 
 # Ensure destination directory exists and resolve absolute path
 mkdir -p "$DEST"
@@ -60,6 +71,16 @@ if [ -d "$SCRIPT_DIR/skills" ]; then
   cp -rv "$SCRIPT_DIR/skills" "$DEST/.claude/"
 else
   echo "Warning: skills directory not found in $SCRIPT_DIR" >&2
+fi
+
+# Copy opencode.json if --with-opencode flag is provided
+if [ "$COPY_OPENCODE" = true ]; then
+  if [ -f "$SCRIPT_DIR/opencode/opencode.json" ]; then
+    echo "Copying opencode.json to: $DEST/"
+    cp -v "$SCRIPT_DIR/opencode/opencode.json" "$DEST/"
+  else
+    echo "Warning: opencode/opencode.json not found in $SCRIPT_DIR" >&2
+  fi
 fi
 
 echo "Finished."

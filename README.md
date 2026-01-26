@@ -38,6 +38,9 @@ Copy the ralph files into your project:
 mkdir -p scripts/ralph
 cp path_to_this_repo/ralph.sh scripts/ralph/
 cp path_to_this_repo/prompt.md scripts/ralph/
+
+# optional: copy opencode.json to your project root to configure opencode instance
+cp path_to_this_repo/opencode/opencode.json /root_of_your_project/
 chmod +x scripts/ralph/ralph.sh
 ```
 
